@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="src" path="src/plugins/sso/src/java"/>
 	<classpathentry kind="src" path="src/plugins/broadcast/src/java"/>
 	<classpathentry kind="src" path="src/plugins/clientControl/src/java"/>
-	<classpathentry kind="src" path="src/plugins/clustering/src/java"/>
 	<classpathentry kind="src" path="src/plugins/contentFilter/src/java"/>
 	<classpathentry kind="src" path="src/plugins/dbaccess/src/java"/>
 	<classpathentry kind="src" path="src/plugins/emailListener/src/java"/>
@@ -18,7 +18,6 @@
 	<classpathentry kind="src" path="src/plugins/presence/src/java"/>
 	<classpathentry kind="src" path="src/plugins/registration/src/java"/>
 	<classpathentry kind="src" path="src/plugins/search/src/java"/>
-	<classpathentry kind="src" path="src/plugins/sip/src/java"/>
 	<classpathentry kind="src" path="src/plugins/subscription/src/java"/>
 	<classpathentry kind="src" path="src/plugins/userCreation/src/java"/>
 	<classpathentry kind="src" path="src/plugins/userImportExport/src/java"/>
@@ -150,5 +149,7 @@
 	<classpathentry kind="lib" path="src/web/WEB-INF/lib/dwr.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="src/plugins/stunserver/lib/jstun-0.6.1.jar"/>
+	<classpathentry kind="lib" path="build/lib/merge/jetty-jmx.jar"/>
+	<classpathentry kind="lib" path="build/lib/merge/mina-integration-jmx.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

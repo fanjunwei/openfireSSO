@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin>
+	<databaseKey>sso</databaseKey>
+	<databaseVersion>1</databaseVersion>
+    <class>org.fjw.openfire.plugin.SSOPlugin</class>
+    <name>sso</name>
+    <description>登录状态检测</description>
+    <author>FJW</author>
+    <version>1.0</version>
+    <date>9/25/2013</date>
+    <minServerVersion>3.7.0</minServerVersion>
+    <adminconsole>
+     <tab id="sso-tab" name="sso服务器管理"
+                url="sso-server.jsp"
+                description="sso服务器管理">
+                
+     </tab>
+    </adminconsole>
+</plugin>

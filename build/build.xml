@@ -269,7 +269,7 @@
     <!-- compile =============================================================================== -->
     <target name="compile" depends="init" description="Compiles Openfire app code">
         <mkdir dir="${compile.dir}"/>
-        <javac
+        <javac encoding="utf-8"
                 destdir="${compile.dir}"
                 includeAntRuntime="no"
                 debug="on"
@@ -289,7 +289,7 @@
             <then>
 
                 <mkdir dir="${overlay.compile.dir}"/>
-                <javac
+                <javac encoding="utf-8"
                         destdir="${overlay.compile.dir}"
                         includeAntRuntime="no"
                         debug="on"
@@ -537,7 +537,7 @@
         </java>
 
         <!-- Compile java source -->
-        <javac
+        <javac encoding="utf-8"
                 destdir="${jspc.classes.dest.dir}"
                 includeAntRuntime="no"
                 debug="on"
@@ -587,7 +587,7 @@
     <target name="test" depends="openfire" description="Compiles and runs test cases">
         <!-- Compile all test code -->
         <mkdir dir="${test.classes.dest.dir}"/>
-        <javac
+        <javac encoding="utf-8"
                 destdir="${test.classes.dest.dir}"
                 includeAntRuntime="no"
                 debug="on"
@@ -1315,7 +1315,7 @@
 
                 <!-- Compile plugin source code -->
                 <mkdir dir="${plugin.dev.dest.dir}/@{plugin}/target/classes"/>
-                <javac
+                <javac encoding="utf-8"
                         destdir="${plugin.dev.dest.dir}/@{plugin}/target/classes"
                         includeAntRuntime="no"
                         debug="on"
@@ -1355,7 +1355,7 @@
                         <mapper type="merge" to="@{pluginlib}/@{plugin}-lib.jar"/>
                     </uptodate></not>
                     <then>
-                        <javac
+                        <javac encoding="utf-8"
                             destdir="@{pluginlib}/classes"
                             includeAntRuntime="no"
                             debug="on"
@@ -1481,7 +1481,7 @@
                         </taskdef>
 
                         <!-- JSP to Java -->
-                        <jasper2
+                        <jasper2 javaEncoding="UTF-8"
                                 validateXml="false"
                                 uriroot="${plugin.dev.dest.dir}/@{plugin}/target/web"
                                 outputDir="${plugin.dev.dest.dir}/@{plugin}/target/jspc/java"
@@ -1523,7 +1523,7 @@
                         </if>
 
                         <!-- Compile java classes -->
-                        <javac
+                        <javac encoding="utf-8"
                                 destdir="${plugin.dev.dest.dir}/@{plugin}/target/jspc/classes"
                                 includeAntRuntime="no"
                                 debug="on"
@@ -1636,7 +1636,7 @@
         <mkdir dir="${anttools.target.dir}"/>
         <mkdir dir="${anttools.target.dir}/classes"/>
 
-        <javac
+        <javac encoding="utf-8"
                 destdir="${anttools.target.dir}/classes"
                 includeAntRuntime="no"
                 debug="on"

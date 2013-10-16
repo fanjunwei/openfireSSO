@@ -10,6 +10,10 @@
         <servlet-name>SSORosterServlet</servlet-name>
         <servlet-class> org.fjw.openfire.plugin.sso.SSORosterServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SSOMessageServlet</servlet-name>
+        <servlet-class> org.fjw.openfire.plugin.sso.SSOMessageServlet</servlet-class>
+    </servlet>
 
     <!-- Servlet mappings -->
     <servlet-mapping>
@@ -19,5 +23,9 @@
     <servlet-mapping>
         <servlet-name>SSORosterServlet</servlet-name>
         <url-pattern>/roster</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    <servlet-name>SSOMessageServlet</servlet-name>
+        <url-pattern>/message</url-pattern>
     </servlet-mapping>
 </web-app>

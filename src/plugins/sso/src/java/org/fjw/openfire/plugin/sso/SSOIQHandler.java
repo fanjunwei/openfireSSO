@@ -44,7 +44,7 @@ public class SSOIQHandler extends IQHandler {
 			resiq.setChildElement(element);
 			Presence presence = mPlugin.getPresence(iq.getFrom().toString());
 			presence.deleteExtension("token", "com:sso");
-			presence.addChildElement("token", "com:sso").addText(uuid);
+			presence.addChildElement("token", "com:sso").addText(MD5Helper.MD5(uuid));
 			return resiq;
 		} catch (Throwable ex) {
 

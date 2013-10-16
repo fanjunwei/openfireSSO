@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.dom4j.Element;
 import org.fjw.openfire.plugin.SSOPlugin;
 import org.jivesoftware.admin.AuthCheckFilter;
 import org.jivesoftware.openfire.XMPPServer;
@@ -16,13 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.Presence;
 
+import com.alibaba.fastjson.JSON;
+
 public class SSOStatusServlet extends HttpServlet {
 
 	private static final Logger Log = LoggerFactory
 			.getLogger(SSOStatusServlet.class);
 
 	private SSOPlugin plugin;
-	private XMLPresenceProvider xmlProvider;
 
 	public SSOStatusServlet() {
 
@@ -33,7 +35,6 @@ public class SSOStatusServlet extends HttpServlet {
 		super.init(config);
 		plugin = (SSOPlugin) XMPPServer.getInstance().getPluginManager()
 				.getPlugin("sso");
-		xmlProvider = new XMLPresenceProvider();
 		AuthCheckFilter.addExclude("sso/status");
 	}
 
@@ -47,14 +48,40 @@ public class SSOStatusServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String jid = request.getParameter("jid");
+		String token = request.getParameter("token");
+		ResultObject outobj = new ResultObject();
 		try {
 			Presence presence = plugin.getPresence(jid);
-			xmlProvider.sendInfo(request, response, presence);
+			if (presence == null) {
+				outobj.success=false;
+				outobj.status="401";
+				outobj.message="没有登录";
+			} else {
+				Element tokenEle = presence.getChildElement("token", "com:sso");
+				String userToken = tokenEle.getText();
+				if (token !=null && userToken != null && userToken.equals(MD5Helper.MD5(token))) {
+					outobj.success=true;
+					outobj.status="200";
+					outobj.message=null;
+				} else {
+					outobj.success=false;
+					outobj.status="402";
+					outobj.message="token认证错误";
+				}
+			}
 		} catch (UserNotFoundException e) {
-			xmlProvider.sendUserNotFound(request, response);
+			outobj.success=false;
+			outobj.status="404";
+			outobj.message="无此用户";
 		} catch (IllegalArgumentException e) {
-			xmlProvider.sendUserNotFound(request, response);
+			outobj.success=false;
+			outobj.status="404";
+			outobj.message="无此用户";
 		}
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("application/json");
+		String json = JSON.toJSONString(outobj);
+		response.getWriter().print(json);
 
 	}
 

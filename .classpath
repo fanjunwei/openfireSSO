@@ -151,5 +151,6 @@
 	<classpathentry kind="lib" path="src/plugins/stunserver/lib/jstun-0.6.1.jar"/>
 	<classpathentry kind="lib" path="build/lib/merge/jetty-jmx.jar"/>
 	<classpathentry kind="lib" path="build/lib/merge/mina-integration-jmx.jar"/>
+	<classpathentry kind="lib" path="src/plugins/sso/lib/fastjson-1.1.36.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

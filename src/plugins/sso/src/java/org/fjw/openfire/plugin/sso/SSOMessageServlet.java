@@ -9,12 +9,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.dom4j.Element;
+import org.fjw.openfire.plugin.SSOPlugin;
 import org.jivesoftware.admin.AuthCheckFilter;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
+import org.jivesoftware.openfire.user.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
+import org.xmpp.packet.Presence;
+
+import com.alibaba.fastjson.JSON;
 
 public class SSOMessageServlet extends HttpServlet {
 
@@ -23,6 +29,7 @@ public class SSOMessageServlet extends HttpServlet {
 
 	private XMPPServer server;
 	private SessionManager sessionManager;
+	private SSOPlugin plugin;
 
 	public SSOMessageServlet() {
 
@@ -33,6 +40,8 @@ public class SSOMessageServlet extends HttpServlet {
 		super.init(config);
 		server = XMPPServer.getInstance();
 		sessionManager = server.getSessionManager();
+		plugin = (SSOPlugin) XMPPServer.getInstance().getPluginManager()
+				.getPlugin("sso");
 		AuthCheckFilter.addExclude("sso/message");
 	}
 
@@ -45,13 +54,36 @@ public class SSOMessageServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
+		ResultObject outobj = new ResultObject();
 		String jid = request.getParameter("jid");
 		String msg = request.getParameter("msg");
-		out.println(jid);
-		out.println(msg);
-		sessionManager.sendServerMessage(new JID(jid), null, msg);
-		out.println("ok");
+
+		try {
+			plugin.getPresence(jid);
+			try {
+				sessionManager.sendServerMessage(new JID(jid), null, msg);
+				outobj.success = true;
+				outobj.status = "200";
+				outobj.message = null;
+			} catch (Exception ex) {
+				outobj.success = false;
+				outobj.status = "500";
+				outobj.message = ex.getMessage();
+			}
+		} catch (UserNotFoundException e) {
+			outobj.success = false;
+			outobj.status = "404";
+			outobj.message = "无此用户";
+		} catch (IllegalArgumentException e) {
+			outobj.success = false;
+			outobj.status = "404";
+			outobj.message = "无此用户";
+		}
+
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("application/json");
+		String json = JSON.toJSONString(outobj);
+		response.getWriter().print(json);
 	}
 
 	@Override

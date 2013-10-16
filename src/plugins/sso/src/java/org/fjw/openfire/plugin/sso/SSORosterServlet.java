@@ -19,6 +19,8 @@ import org.jivesoftware.openfire.user.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
+
 public class SSORosterServlet extends HttpServlet {
 
 	private static final Logger Log = LoggerFactory
@@ -52,17 +54,29 @@ public class SSORosterServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String jid = request.getParameter("jid");
-		PrintWriter out = response.getWriter();
+		RosterResultObject result = new RosterResultObject();
 		try {
 			Roster cachedRoster = userManager.getUser(jid).getRoster();
+			result.success = true;
+			result.status = "200";
+			result.message = null;
 			for (RosterItem item : cachedRoster.getRosterItems()) {
-				out.println(item.getJid());
-				out.println(item.getNickname());
-			} 
+				RosterResultObjectItem ritem = new RosterResultObjectItem();
+				ritem.nickname = item.getNickname();
+				ritem.jid = item.getJid().toString();
+				result.rosters.add(ritem);
+
+			}
 		} catch (UserNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			result.success = false;
+			result.status = "404";
+			result.message = "无此用户";
+			result.rosters=null;
 		}
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("application/json");
+		String json = JSON.toJSONString(result);
+		response.getWriter().print(json);
 	}
 
 	@Override

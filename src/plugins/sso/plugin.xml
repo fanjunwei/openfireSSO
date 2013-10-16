@@ -2,7 +2,7 @@
 
 <plugin>
 	<databaseKey>sso</databaseKey>
-	<databaseVersion>1</databaseVersion>
+	<databaseVersion>0</databaseVersion>
     <class>org.fjw.openfire.plugin.SSOPlugin</class>
     <name>sso</name>
     <description>登录状态检测</description>
@@ -11,10 +11,17 @@
     <date>9/25/2013</date>
     <minServerVersion>3.7.0</minServerVersion>
     <adminconsole>
-     <tab id="sso-tab" name="sso服务器管理"
+     <tab id="sso-tab" name="SSO"
                 url="sso-server.jsp"
-                description="sso服务器管理">
-                
+                description="SSO">
+		<sidebar id="sso-server-sidebar" name="第三方服务器管理">
+                   <item id="sso-server-manage" name="管理"
+                         url="sso-server.jsp"
+                         description="浏览编辑服务器列表"/>
+                   <item id="sso-server-add" name="添加"
+                         url="sso-server-add.jsp"
+                         description="添加服务器"/>
+		</sidebar>
      </tab>
     </adminconsole>
 </plugin>

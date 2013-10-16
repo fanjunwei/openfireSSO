@@ -1,3 +1,8 @@
+# $Revision$
+# $Date$
+
+INSERT INTO ofVersion (name, version) VALUES ('sso', 0);
+
 CREATE  TABLE IF NOT EXISTS `ssoServer` (
   `serverID` CHAR(36) NOT NULL ,
   `serverName` VARCHAR(255) NOT NULL ,

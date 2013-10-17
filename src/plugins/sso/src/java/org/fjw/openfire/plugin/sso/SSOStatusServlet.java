@@ -45,6 +45,8 @@ public class SSOStatusServlet extends HttpServlet {
 		HttpParmDecry parmdecry = new HttpParmDecry(request);
 		String jid = parmdecry.getParameter("jid");
 		String token = parmdecry.getParameter("token");
+		System.out.println("jid="+jid);
+		System.out.println("token="+token);
 		ResultObject outobj = new ResultObject();
 		try {
 			Presence presence = plugin.getPresence(jid);

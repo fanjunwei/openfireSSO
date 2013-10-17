@@ -22,6 +22,8 @@ public class HttpParmDecry {
 		if (HTTP_ENCRYED) {
 			sid = request.getParameter("sid");
 			key = getKey(sid);
+			System.out.println("sid="+sid);
+			System.out.println("key="+key);
 		}
 	}
 
@@ -29,7 +31,7 @@ public class HttpParmDecry {
 		String outkey = null;
 		try {
 			Connection connection = DbConnectionManager.getConnection();
-			String sql = "select `key` from FROM ssoServer where serverID=?";
+			String sql = "SELECT `key` FROM ssoServer where serverID=?";
 			PreparedStatement pre = connection.prepareStatement(sql);
 			pre.setString(1, sid);
 			ResultSet result = pre.executeQuery();

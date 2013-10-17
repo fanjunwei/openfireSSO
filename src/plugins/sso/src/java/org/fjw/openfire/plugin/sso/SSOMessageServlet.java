@@ -51,7 +51,7 @@ public class SSOMessageServlet extends HttpServlet {
 		HttpParmDecry parmdecry = new HttpParmDecry(request);
 		String jid = parmdecry.getParameter("jid");
 		String msg = parmdecry.getParameter("msg");
-
+		System.out.println("msg="+msg);
 		try {
 			plugin.getPresence(jid);
 			try {

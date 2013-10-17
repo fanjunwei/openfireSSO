@@ -29,7 +29,7 @@ public class SSOPlugin implements Plugin, Component {
 	private static final String subdomain = "sso";
 	private static final Logger Log = LoggerFactory.getLogger(SSOPlugin.class);
 	private XMPPServer server;
-	private PacketInterceptor pktInterceptor = null;
+	// private PacketInterceptor pktInterceptor = null;
 	private SSOIQHandler ssoIQHandler = null;
 	private InterceptorManager icpManager = InterceptorManager.getInstance();
 
@@ -45,8 +45,8 @@ public class SSOPlugin implements Plugin, Component {
 	public void initializePlugin(PluginManager manager, File pluginDirectory) {
 		System.out.println("SSO 初始化…… ");
 		server = XMPPServer.getInstance();
-		pktInterceptor = new SSOInterceptor();
-		icpManager.addInterceptor(pktInterceptor);
+		// pktInterceptor = new SSOInterceptor();
+		// icpManager.addInterceptor(pktInterceptor);
 		ssoIQHandler = new SSOIQHandler(this);
 		server.getIQRouter().addHandler(ssoIQHandler);
 
@@ -70,11 +70,11 @@ public class SSOPlugin implements Plugin, Component {
 	public void destroyPlugin() {
 
 		System.out.println("SSO 卸载…… ");
-		try {
-			icpManager.removeInterceptor(pktInterceptor);
-		} catch (Exception e) {
-			Log.error(e.getMessage(), e);
-		}
+		// try {
+		// icpManager.removeInterceptor(pktInterceptor);
+		// } catch (Exception e) {
+		// Log.error(e.getMessage(), e);
+		// }
 		try {
 			server.getIQRouter().removeHandler(ssoIQHandler);
 		} catch (Exception e) {
@@ -125,55 +125,57 @@ public class SSOPlugin implements Plugin, Component {
 			}
 		}
 	}
-	
-	
-    public Presence getPresence(String jid) throws UserNotFoundException {
-        if (jid == null) {
-            throw new UserNotFoundException("Target JID not found in request");
-        }
-        JID targetJID = new JID(jid);
 
-        // Check that the sender is not requesting information of a remote server entity
-        if (targetJID.getDomain() == null || XMPPServer.getInstance().isRemote(targetJID)) {
-            throw new UserNotFoundException("Domain does not matches local server domain");
-        }
-        if (!hostname.equals(targetJID.getDomain())) {
-            // Sender is requesting information about component presence, so we send a 
-            // presence probe to the component.
-            presenceManager.probePresence(componentJID, targetJID);
+	public Presence getPresence(String jid) throws UserNotFoundException {
+		if (jid == null) {
+			throw new UserNotFoundException("Target JID not found in request");
+		}
+		JID targetJID = new JID(jid);
 
-            // Wait 30 seconds until we get the probe presence result
-            int count = 0;
-            Presence presence = probedPresence.get(jid);
-            while (presence == null) {
-                if (count > 300) {
-                    // After 30 seconds, timeout
-                    throw new UserNotFoundException(
-                            "Request for component presence has timed-out.");
-                }
-                try {
-                    Thread.sleep(100);
-                }
-                catch (InterruptedException e) {
-                    // don't care!
-                }
-                presence = probedPresence.get(jid);
+		// Check that the sender is not requesting information of a remote
+		// server entity
+		if (targetJID.getDomain() == null
+				|| XMPPServer.getInstance().isRemote(targetJID)) {
+			throw new UserNotFoundException(
+					"Domain does not matches local server domain");
+		}
+		if (!hostname.equals(targetJID.getDomain())) {
+			// Sender is requesting information about component presence, so we
+			// send a
+			// presence probe to the component.
+			presenceManager.probePresence(componentJID, targetJID);
 
-                count++;
-            }
-            // Clean-up probe presence result
-            probedPresence.remove(jid);
-            // Return component presence
-            return presence;
-        }
-        if (targetJID.getNode() == null ||
-                !UserManager.getInstance().isRegisteredUser(targetJID.getNode())) {
-            // Sender is requesting presence information of an anonymous user
-            throw new UserNotFoundException("Username is null");
-        }
-        User user = userManager.getUser(targetJID.getNode());
-        return presenceManager.getPresence(user);
-    }
+			// Wait 30 seconds until we get the probe presence result
+			int count = 0;
+			Presence presence = probedPresence.get(jid);
+			while (presence == null) {
+				if (count > 300) {
+					// After 30 seconds, timeout
+					throw new UserNotFoundException(
+							"Request for component presence has timed-out.");
+				}
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// don't care!
+				}
+				presence = probedPresence.get(jid);
 
+				count++;
+			}
+			// Clean-up probe presence result
+			probedPresence.remove(jid);
+			// Return component presence
+			return presence;
+		}
+		if (targetJID.getNode() == null
+				|| !UserManager.getInstance().isRegisteredUser(
+						targetJID.getNode())) {
+			// Sender is requesting presence information of an anonymous user
+			throw new UserNotFoundException("Username is null");
+		}
+		User user = userManager.getUser(targetJID.getNode());
+		return presenceManager.getPresence(user);
+	}
 
 }

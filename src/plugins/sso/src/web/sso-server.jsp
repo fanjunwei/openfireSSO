@@ -1,4 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@page import="org.jivesoftware.util.ParamUtils"%>
 <%@page import="java.sql.*,
 org.jivesoftware.database.*"
 	errorPage="error.jsp"%>
@@ -19,6 +20,17 @@ org.jivesoftware.database.*"
 	}
 </script>
 <%
+	int pageSize = 100;
+	int totalCount = 0;
+	int pageCount = 0;
+	int pageIndex = 0;
+	String strPangeIndex = request.getParameter("index");
+	if (strPangeIndex != null && strPangeIndex != "") {
+		try {
+			pageIndex = Integer.parseInt(strPangeIndex);
+		} catch (Exception ex) {
+		}
+	}
 	String method = request.getParameter("method");
 	String id = request.getParameter("id");
 	boolean delSuccess = false;
@@ -43,10 +55,20 @@ org.jivesoftware.database.*"
 			}
 			preDel.close();
 		}
-
-		String sql = "SELECT serverID,serverName,`key`,`enable` FROM ssoServer";
+		String sql = "SELECT count(*) FROM ssoServer";
 		PreparedStatement pre = connection.prepareStatement(sql);
 		ResultSet result = pre.executeQuery();
+		if (result.next()) {
+			totalCount = result.getInt(1);
+		}
+		result.close();
+		pre.close();
+		pageCount = totalCount / pageSize;
+		int start = pageIndex * pageSize;
+		sql = "SELECT serverID,serverName,`key`,`enable` FROM ssoServer order by serverName LIMIT "
+				+ start + "," + pageSize;
+		pre = connection.prepareStatement(sql);
+		result = pre.executeQuery();
 	%>
 	<%
 		if (delSuccess) {
@@ -94,17 +116,17 @@ org.jivesoftware.database.*"
 							<%
 								}
 							%>
-							<td><a href="sso-server-edit.jsp?id=<%=result.getString(1)%>">
-							<%=result.getString(2)%></a></td>
+							<td><a
+								href="sso-server-edit.jsp?id=<%=result.getString(1)%>"> <%=result.getString(2)%></a></td>
 						</tr>
 					</table>
 				</td>
 				<td><%=result.getString(1)%></td>
 				<td><%=result.getString(3)%></td>
 				<td><%=result.getBoolean(4) ? "YES" : "NO"%></td>
-				<td><a href="sso-server-edit.jsp?id=<%=result.getString(1)%>" title="Click to edit..."> <img
-						src="images/edit-16x16.gif" width="16" height="16" border="0"
-						alt="">
+				<td><a href="sso-server-edit.jsp?id=<%=result.getString(1)%>"
+					title="Click to edit..."> <img src="images/edit-16x16.gif"
+						width="16" height="16" border="0" alt="">
 				</a></td>
 				<td><a
 					href='javascript:deleteConfim("sso-server.jsp?method=delete&id=<%=result.getString(1)%>")'
@@ -120,4 +142,20 @@ org.jivesoftware.database.*"
 			%>
 		</tbody>
 	</table>
+	<%
+		if (pageCount > 1) {
+			for (int i = 0; i < pageCount; i++) {
+				if (i == pageIndex) {
+	%>
+	[<%=Integer.toString(i + 1)%>]&nbsp;&nbsp;
+	<%
+		} else {
+	%>
+	<a href="sso-server.jsp?index=<%=i%>">[<%=Integer.toString(i + 1)%>]
+	</a>&nbsp;&nbsp;
+	<%
+		}
+			}
+		}
+	%>
 </body>

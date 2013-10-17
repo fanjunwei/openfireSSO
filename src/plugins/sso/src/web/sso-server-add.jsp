@@ -77,7 +77,7 @@ java.util.UUID"
 			</tr>
 			<tr>
 				<td><fmt:message key="sso.serverenable" /></td>
-				<td><input type="checkbox" name="serverEnable" size="20">
+				<td><input type="checkbox" checked="checked" name="serverEnable" size="20">
 				</td>
 			</tr>
 			<tr>

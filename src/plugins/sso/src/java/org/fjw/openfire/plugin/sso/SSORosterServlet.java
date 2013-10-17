@@ -1,7 +1,6 @@
 package org.fjw.openfire.plugin.sso;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -9,24 +8,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fjw.openfire.plugin.SSOPlugin;
 import org.jivesoftware.admin.AuthCheckFilter;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.roster.Roster;
 import org.jivesoftware.openfire.roster.RosterItem;
 import org.jivesoftware.openfire.user.UserManager;
 import org.jivesoftware.openfire.user.UserNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 
 public class SSORosterServlet extends HttpServlet {
 
-	private static final Logger Log = LoggerFactory
-			.getLogger(SSORosterServlet.class);
 
-	private SSOPlugin plugin;
 	private XMPPServer server;
 	private UserManager userManager;
 
@@ -39,8 +32,6 @@ public class SSORosterServlet extends HttpServlet {
 		super.init(config);
 		server = XMPPServer.getInstance();
 		userManager = server.getUserManager();
-		plugin = (SSOPlugin) XMPPServer.getInstance().getPluginManager()
-				.getPlugin("sso");
 		AuthCheckFilter.addExclude("sso/roster");
 	}
 

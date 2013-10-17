@@ -13,16 +13,11 @@ import org.fjw.openfire.plugin.SSOPlugin;
 import org.jivesoftware.admin.AuthCheckFilter;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.user.UserNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xmpp.packet.Presence;
 
 import com.alibaba.fastjson.JSON;
 
 public class SSOStatusServlet extends HttpServlet {
-
-	private static final Logger Log = LoggerFactory
-			.getLogger(SSOStatusServlet.class);
 
 	private SSOPlugin plugin;
 
@@ -54,30 +49,31 @@ public class SSOStatusServlet extends HttpServlet {
 		try {
 			Presence presence = plugin.getPresence(jid);
 			if (presence == null) {
-				outobj.success=false;
-				outobj.status="401";
-				outobj.message="没有登录";
+				outobj.success = false;
+				outobj.status = "401";
+				outobj.message = "没有登录";
 			} else {
 				Element tokenEle = presence.getChildElement("token", "com:sso");
 				String userToken = tokenEle.getText();
-				if (token !=null && userToken != null && userToken.equals(MD5Helper.MD5(token))) {
-					outobj.success=true;
-					outobj.status="200";
-					outobj.message=null;
+				if (token != null && userToken != null
+						&& userToken.equals(MD5Helper.MD5(token))) {
+					outobj.success = true;
+					outobj.status = "200";
+					outobj.message = null;
 				} else {
-					outobj.success=false;
-					outobj.status="402";
-					outobj.message="token认证错误";
+					outobj.success = false;
+					outobj.status = "402";
+					outobj.message = "token认证错误";
 				}
 			}
 		} catch (UserNotFoundException e) {
-			outobj.success=false;
-			outobj.status="404";
-			outobj.message="无此用户";
+			outobj.success = false;
+			outobj.status = "404";
+			outobj.message = "无此用户";
 		} catch (IllegalArgumentException e) {
-			outobj.success=false;
-			outobj.status="404";
-			outobj.message="无此用户";
+			outobj.success = false;
+			outobj.status = "404";
+			outobj.message = "无此用户";
 		}
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/json");

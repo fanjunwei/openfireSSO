@@ -1,7 +1,6 @@
 package org.fjw.openfire.plugin.sso;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -9,23 +8,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.dom4j.Element;
 import org.fjw.openfire.plugin.SSOPlugin;
 import org.jivesoftware.admin.AuthCheckFilter;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.user.UserNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
-import org.xmpp.packet.Presence;
 
 import com.alibaba.fastjson.JSON;
 
 public class SSOMessageServlet extends HttpServlet {
 
-	private static final Logger Log = LoggerFactory
-			.getLogger(SSOMessageServlet.class);
 
 	private XMPPServer server;
 	private SessionManager sessionManager;

@@ -33,10 +33,12 @@ public class SSOIQHandler extends IQHandler {
 		System.out.println("SSOIQHandler" + iq.toXML());
 		try {
 			String uuid = UUID.randomUUID().toString();
-			
+
 			IQ resiq = new IQ();
 			resiq.setType(Type.result);
 			resiq.setTo(iq.getFrom());
+			if (iq.getID() != null && iq.getID() != "")
+				resiq.setID(iq.getID());
 			Namespace namespace = new Namespace("", "com:sso");
 			DefaultElement element = new DefaultElement("token", namespace);
 			DefaultText body = new DefaultText(uuid);
@@ -44,7 +46,8 @@ public class SSOIQHandler extends IQHandler {
 			resiq.setChildElement(element);
 			Presence presence = mPlugin.getPresence(iq.getFrom().toString());
 			presence.deleteExtension("token", "com:sso");
-			presence.addChildElement("token", "com:sso").addText(MD5Helper.MD5(uuid));
+			presence.addChildElement("token", "com:sso").addText(
+					MD5Helper.MD5(uuid));
 			return resiq;
 		} catch (Throwable ex) {
 

@@ -5,7 +5,7 @@
 	<databaseVersion>0</databaseVersion>
     <class>org.fjw.openfire.plugin.SSOPlugin</class>
     <name>sso</name>
-    <description>登录状态检测</description>
+    <description>单点登录</description>
     <author>FJW</author>
     <version>1.0</version>
     <date>9/25/2013</date>

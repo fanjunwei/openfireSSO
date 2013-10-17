@@ -42,40 +42,47 @@ public class SSOStatusServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		HttpParmDecry parmdecry = new HttpParmDecry(request);
-		String jid = parmdecry.getParameter("jid");
-		String token = parmdecry.getParameter("token");
-		System.out.println("jid="+jid);
-		System.out.println("token="+token);
 		ResultObject outobj = new ResultObject();
 		try {
-			Presence presence = plugin.getPresence(jid);
-			if (presence == null) {
-				outobj.success = false;
-				outobj.status = "401";
-				outobj.message = "没有登录";
-			} else {
-				Element tokenEle = presence.getChildElement("token", "com:sso");
-				String userToken = tokenEle.getText();
-				if (token != null && userToken != null
-						&& userToken.equals(MD5Helper.MD5(token))) {
-					outobj.success = true;
-					outobj.status = "200";
-					outobj.message = null;
-				} else {
+			HttpParmDecry parmdecry = new HttpParmDecry(request);
+			String jid = parmdecry.getParameter("jid");
+			String token = parmdecry.getParameter("token");
+			System.out.println("jid=" + jid);
+			System.out.println("token=" + token);
+			try {
+				Presence presence = plugin.getPresence(jid);
+				if (presence == null) {
 					outobj.success = false;
-					outobj.status = "402";
-					outobj.message = "token认证错误";
+					outobj.status = "401";
+					outobj.message = "没有登录";
+				} else {
+					Element tokenEle = presence.getChildElement("token",
+							"com:sso");
+					String userToken = tokenEle.getText();
+					if (token != null && userToken != null
+							&& userToken.equals(MD5Helper.MD5(token))) {
+						outobj.success = true;
+						outobj.status = "200";
+						outobj.message = null;
+					} else {
+						outobj.success = false;
+						outobj.status = "402";
+						outobj.message = "token认证错误";
+					}
 				}
+			} catch (UserNotFoundException e) {
+				outobj.success = false;
+				outobj.status = "404";
+				outobj.message = "无此用户";
+			} catch (IllegalArgumentException e) {
+				outobj.success = false;
+				outobj.status = "404";
+				outobj.message = "无此用户";
 			}
-		} catch (UserNotFoundException e) {
+		} catch (ServerDisableException ex) {
 			outobj.success = false;
-			outobj.status = "404";
-			outobj.message = "无此用户";
-		} catch (IllegalArgumentException e) {
-			outobj.success = false;
-			outobj.status = "404";
-			outobj.message = "无此用户";
+			outobj.status = "501";
+			outobj.message = "ServerID错误或不可用";
 		}
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/json");

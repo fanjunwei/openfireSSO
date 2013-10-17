@@ -14,29 +14,31 @@ public class HttpParmDecry {
 	HttpServletRequest request;
 	String sid;
 	String key;
+	boolean enable = false;
 
 	public static final boolean HTTP_ENCRYED = true;
 
-	public HttpParmDecry(HttpServletRequest request) {
+	public HttpParmDecry(HttpServletRequest request) throws ServerDisableException {
 		this.request = request;
 		if (HTTP_ENCRYED) {
 			sid = request.getParameter("sid");
 			key = getKey(sid);
-			System.out.println("sid="+sid);
-			System.out.println("key="+key);
+			System.out.println("sid=" + sid);
+			System.out.println("key=" + key);
 		}
 	}
 
-	private String getKey(String sid) {
+	private String getKey(String sid) throws ServerDisableException {
 		String outkey = null;
 		try {
 			Connection connection = DbConnectionManager.getConnection();
-			String sql = "SELECT `key` FROM ssoServer where serverID=?";
+			String sql = "SELECT `key`,`enable` FROM ssoServer where serverID=?";
 			PreparedStatement pre = connection.prepareStatement(sql);
 			pre.setString(1, sid);
 			ResultSet result = pre.executeQuery();
 			if (result.next()) {
 				outkey = result.getString(1);
+				enable = result.getBoolean(2);
 			}
 			result.close();
 			pre.close();
@@ -44,6 +46,8 @@ public class HttpParmDecry {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		if(!enable)
+			throw new ServerDisableException();
 		return outkey;
 	}
 

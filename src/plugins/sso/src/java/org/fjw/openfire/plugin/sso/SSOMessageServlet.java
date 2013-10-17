@@ -19,7 +19,6 @@ import com.alibaba.fastjson.JSON;
 
 public class SSOMessageServlet extends HttpServlet {
 
-
 	private XMPPServer server;
 	private SessionManager sessionManager;
 	private SSOPlugin plugin;
@@ -47,31 +46,38 @@ public class SSOMessageServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+
 		ResultObject outobj = new ResultObject();
-		HttpParmDecry parmdecry = new HttpParmDecry(request);
-		String jid = parmdecry.getParameter("jid");
-		String msg = parmdecry.getParameter("msg");
-		System.out.println("msg="+msg);
 		try {
-			plugin.getPresence(jid);
+			HttpParmDecry parmdecry = new HttpParmDecry(request);
+			String jid = parmdecry.getParameter("jid");
+			String msg = parmdecry.getParameter("msg");
+			System.out.println("msg=" + msg);
 			try {
-				sessionManager.sendServerMessage(new JID(jid), null, msg);
-				outobj.success = true;
-				outobj.status = "200";
-				outobj.message = null;
-			} catch (Exception ex) {
+				plugin.getPresence(jid);
+				try {
+					sessionManager.sendServerMessage(new JID(jid), null, msg);
+					outobj.success = true;
+					outobj.status = "200";
+					outobj.message = null;
+				} catch (Exception ex) {
+					outobj.success = false;
+					outobj.status = "500";
+					outobj.message = ex.getMessage();
+				}
+			} catch (UserNotFoundException e) {
 				outobj.success = false;
-				outobj.status = "500";
-				outobj.message = ex.getMessage();
+				outobj.status = "404";
+				outobj.message = "无此用户";
+			} catch (IllegalArgumentException e) {
+				outobj.success = false;
+				outobj.status = "404";
+				outobj.message = "无此用户";
 			}
-		} catch (UserNotFoundException e) {
+		} catch (ServerDisableException ex) {
 			outobj.success = false;
-			outobj.status = "404";
-			outobj.message = "无此用户";
-		} catch (IllegalArgumentException e) {
-			outobj.success = false;
-			outobj.status = "404";
-			outobj.message = "无此用户";
+			outobj.status = "501";
+			outobj.message = "ServerID错误或不可用";
 		}
 
 		response.setCharacterEncoding("utf-8");

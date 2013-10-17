@@ -19,7 +19,6 @@ import com.alibaba.fastjson.JSON;
 
 public class SSORosterServlet extends HttpServlet {
 
-
 	private XMPPServer server;
 	private UserManager userManager;
 
@@ -44,26 +43,32 @@ public class SSORosterServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		HttpParmDecry parmdecry = new HttpParmDecry(request);
-		String jid = parmdecry.getParameter("jid");
 		RosterResultObject result = new RosterResultObject();
 		try {
-			Roster cachedRoster = userManager.getUser(jid).getRoster();
-			result.success = true;
-			result.status = "200";
-			result.message = null;
-			for (RosterItem item : cachedRoster.getRosterItems()) {
-				RosterResultObjectItem ritem = new RosterResultObjectItem();
-				ritem.nickname = item.getNickname();
-				ritem.jid = item.getJid().toString();
-				result.rosters.add(ritem);
+			HttpParmDecry parmdecry = new HttpParmDecry(request);
+			String jid = parmdecry.getParameter("jid");
+			try {
+				Roster cachedRoster = userManager.getUser(jid).getRoster();
+				result.success = true;
+				result.status = "200";
+				result.message = null;
+				for (RosterItem item : cachedRoster.getRosterItems()) {
+					RosterResultObjectItem ritem = new RosterResultObjectItem();
+					ritem.nickname = item.getNickname();
+					ritem.jid = item.getJid().toString();
+					result.rosters.add(ritem);
 
+				}
+			} catch (UserNotFoundException e) {
+				result.success = false;
+				result.status = "404";
+				result.message = "无此用户";
+				result.rosters = null;
 			}
-		} catch (UserNotFoundException e) {
+		} catch (ServerDisableException ex) {
 			result.success = false;
-			result.status = "404";
-			result.message = "无此用户";
-			result.rosters=null;
+			result.status = "501";
+			result.message = "ServerID错误或不可用";
 		}
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/json");

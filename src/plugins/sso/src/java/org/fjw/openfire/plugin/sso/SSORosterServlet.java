@@ -69,6 +69,7 @@ public class SSORosterServlet extends HttpServlet {
 			result.success = false;
 			result.status = "501";
 			result.message = "ServerID错误或不可用";
+			result.rosters = null;
 		}
 		response.setCharacterEncoding("utf-8");
 		response.setContentType("application/json");

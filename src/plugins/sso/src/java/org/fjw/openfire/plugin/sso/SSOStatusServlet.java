@@ -47,8 +47,9 @@ public class SSOStatusServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String jid = request.getParameter("jid");
-		String token = request.getParameter("token");
+		HttpParmDecry parmdecry = new HttpParmDecry(request);
+		String jid = parmdecry.getParameter("jid");
+		String token = parmdecry.getParameter("token");
 		ResultObject outobj = new ResultObject();
 		try {
 			Presence presence = plugin.getPresence(jid);

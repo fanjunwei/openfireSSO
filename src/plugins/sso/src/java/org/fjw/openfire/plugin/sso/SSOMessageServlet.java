@@ -55,8 +55,9 @@ public class SSOMessageServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		ResultObject outobj = new ResultObject();
-		String jid = request.getParameter("jid");
-		String msg = request.getParameter("msg");
+		HttpParmDecry parmdecry = new HttpParmDecry(request);
+		String jid = parmdecry.getParameter("jid");
+		String msg = parmdecry.getParameter("msg");
 
 		try {
 			plugin.getPresence(jid);

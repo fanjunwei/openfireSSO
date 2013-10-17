@@ -53,7 +53,8 @@ public class SSORosterServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String jid = request.getParameter("jid");
+		HttpParmDecry parmdecry = new HttpParmDecry(request);
+		String jid = parmdecry.getParameter("jid");
 		RosterResultObject result = new RosterResultObject();
 		try {
 			Roster cachedRoster = userManager.getUser(jid).getRoster();

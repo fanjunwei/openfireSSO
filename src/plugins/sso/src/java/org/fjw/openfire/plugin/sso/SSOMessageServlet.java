@@ -8,12 +8,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fjw.openfire.plugin.SSOPlugin;
 import org.jivesoftware.admin.AuthCheckFilter;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
-import org.jivesoftware.openfire.user.UserNotFoundException;
+import org.jivesoftware.openfire.user.User;
+import org.jivesoftware.openfire.user.UserManager;
 import org.xmpp.packet.JID;
+import org.xmpp.packet.Message;
 
 import com.alibaba.fastjson.JSON;
 
@@ -21,7 +22,7 @@ public class SSOMessageServlet extends HttpServlet {
 
 	private XMPPServer server;
 	private SessionManager sessionManager;
-	private SSOPlugin plugin;
+	private UserManager userManager;
 
 	public SSOMessageServlet() {
 
@@ -32,8 +33,7 @@ public class SSOMessageServlet extends HttpServlet {
 		super.init(config);
 		server = XMPPServer.getInstance();
 		sessionManager = server.getSessionManager();
-		plugin = (SSOPlugin) XMPPServer.getInstance().getPluginManager()
-				.getPlugin("sso");
+		userManager = server.getUserManager();
 		AuthCheckFilter.addExclude("sso/message");
 	}
 
@@ -53,23 +53,32 @@ public class SSOMessageServlet extends HttpServlet {
 			String jid = parmdecry.getParameter("jid");
 			String msg = parmdecry.getParameter("msg");
 			System.out.println("msg=" + msg);
-			try {
-				plugin.getPresence(jid);
+			if (jid != null && userManager.isRegisteredUser(jid) == true) {
+
 				try {
-					sessionManager.sendServerMessage(new JID(jid), null, msg);
+					User user = userManager.getUser(jid);
+					if (server.getPresenceManager().isAvailable(user)) {
+						sessionManager.sendServerMessage(new JID(jid), null,
+								msg);
+					} else {
+						// 离线消息
+						Message message = new Message();
+						message.setFrom(new JID(server.getServerInfo()
+								.getXMPPDomain()));
+						message.setTo(new JID(jid));
+						message.setBody(msg);
+						server.getOfflineMessageStrategy()
+								.storeOffline(message);
+					}
 					outobj.success = true;
 					outobj.status = "200";
 					outobj.message = null;
-				} catch (Exception ex) {
+				} catch (Throwable ex) {
 					outobj.success = false;
 					outobj.status = "500";
 					outobj.message = ex.getMessage();
 				}
-			} catch (UserNotFoundException e) {
-				outobj.success = false;
-				outobj.status = "404";
-				outobj.message = "无此用户";
-			} catch (IllegalArgumentException e) {
+			} else {
 				outobj.success = false;
 				outobj.status = "404";
 				outobj.message = "无此用户";

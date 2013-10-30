@@ -72,7 +72,11 @@ public class SSOMessageServlet extends HttpServlet {
 
 				}
 			}
-			outobj.status = "200";
+			if (outobj.success) {
+				outobj.status = "200";
+			} else {
+				outobj.status = "201";
+			}
 		} catch (ServerDisableException ex) {
 
 			outobj.success = false;
